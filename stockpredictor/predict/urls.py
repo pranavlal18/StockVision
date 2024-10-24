@@ -1,7 +1,7 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
-from .views import register,trending_news,stock_alert_page,check_stock_alerts,add_ticker,StockDataView,stock_on_dashboard_data
+from .views import register,trending_news,stock_alert_page,check_stock_alerts,add_ticker,StockDataView,stock_on_dashboard_data,market_overview
 from django.conf.urls.static import static
 from .views import get_stock_data
 from django.conf import settings
@@ -25,7 +25,7 @@ urlpatterns = [
     path('get_stock_data/<str:symbol>/', StockDataView.as_view(), name='get_stock_data'),
     path('get_stock_data/', get_stock_data, name='get_stock_data'),
     path('get_stock_data/', stock_on_dashboard_data, name='stock_on_dashboard_data'),
-    
+    path('market-overview/', market_overview, name='market_overview'),
     path('compare-stocks/', views.compare_stocks, name='compare_stocks'),
     
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

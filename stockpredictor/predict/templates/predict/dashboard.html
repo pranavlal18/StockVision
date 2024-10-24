@@ -16,6 +16,7 @@
             display: flex;
             height: 100vh;
             overflow: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         video {
@@ -39,6 +40,7 @@
             height: 100%;
             position: relative;
             z-index: 1;
+            transition: background-color 0.3s ease;
         }
 
         .sidebar h2 {
@@ -72,6 +74,7 @@
             flex: 1;
             overflow-y: auto;
             z-index: 1;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         h2 {
@@ -86,6 +89,78 @@
 
         .news-section {
             margin-top: 40px;
+        }
+
+        /* Dark mode styles */
+        .dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        .dark-mode .sidebar {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .dark-mode .main-content {
+            background-color: rgba(18, 18, 18, 0.9);
+        }
+
+        .toggle-switch {
+            position: absolute;
+            bottom: 50px; 
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 50px;
+            --light: #d8dbe0;
+            --dark: #28292c;
+        }
+        
+
+        .switch-label {
+            position: absolute;
+            width: 100%;
+            height: 50px;
+            background-color: var(--dark);
+            border-radius: 25px;
+            cursor: pointer;
+            border: 3px solid var(--dark);
+        }
+
+        .checkbox {
+            position: absolute;
+            display: none;
+        }
+
+        .slider {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 25px;
+            transition: 0.3s;
+        }
+
+        .checkbox:checked ~ .slider {
+            background-color: var(--light);
+        }
+
+        .slider::before {
+            content: "";
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            box-shadow: inset 12px -4px 0px 0px var(--light);
+            background-color: var(--dark);
+            transition: 0.3s;
+        }
+
+        .checkbox:checked ~ .slider::before {
+            transform: translateX(50px);
+            background-color: var(--dark);
+            box-shadow: none;
         }
     </style>
 </head>
@@ -103,67 +178,67 @@
         <a href="{% url 'trending_news' %}"><i class="fas fa-newspaper"></i> View Trending News</a>
         <a href="{% url 'compare_stocks' %}"><i class="fas fa-exchange-alt"></i> Compare Stocks</a>
         <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+
+        <!-- Custom Toggle Switch -->
+        <div class="toggle-switch">
+            <label class="switch-label">
+                <input type="checkbox" class="checkbox" id="theme-switch">
+                <span class="slider"></span>
+            </label>
+        </div>
     </div>
 
     <div class="main-content">
         <h2>Stock Dashboard</h2>
-        
-        <div class="stock-tracker">
-            <h2>Real-Time Stock Tracker</h2>
-            <input type="text" id="ticker" placeholder="Enter stock ticker (e.g., AAPL)">
-            <button id="get-data">Get Stock Data</button>
-            <canvas id="stockChart" width="400" height="200"></canvas>
-            <p id="result"></p>
-        </div>
+
+        <!-- Market Overview Widget -->
+<div class="market-overview">
+    <h3>Market Overview</h3>
+    <div class="market-indices">
+        <h4>Indices Performance:</h4>
+        <ul>
+            <li>S&P 500: {{ sp500_close }}</li>
+            <li>Dow Jones: {{ dow_jones_close }}</li>
+            <li>NASDAQ: {{ nasdaq_close }}</li>
+        </ul>
+    </div>
+    <div class="market-gainers">
+        <h4>Top Gainers:</h4>
+        <ul>
+            {% for data in gainers_data %}
+                <li>{{ data.ticker }}: +{{ data.percent_change }}%</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="market-losers">
+        <h4>Top Losers:</h4>
+        <ul>
+            {% for data in losers_data %}
+                <li>{{ data.ticker }}: -{{ data.percent_change }}%</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+<!-- End of Market Overview Widget -->
+
+        <!-- Your existing content goes here -->
     </div>
 
     <script>
-        document.getElementById('get-data').addEventListener('click', function() {
-            const ticker = document.getElementById('ticker').value;
-            fetch(`/get_stock_data?ticker=${ticker}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        document.getElementById('result').innerText = data.error;
-                        return;
-                    }
-                    
-                    const ctx = document.getElementById('stockChart').getContext('2d');
-                    const labels = data.dates;
-                    const prices = data.prices;
-                    
-                    // Clear previous chart if it exists
-                    if (window.stockChart) {
-                        window.stockChart.destroy();
-                    }
+        const toggleSwitch = document.getElementById('theme-switch');
 
-                    window.stockChart = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                label: ticker,
-                                data: prices,
-                                borderColor: 'rgba(26, 115, 232, 1)',
-                                borderWidth: 2,
-                                fill: false
-                            }]
-                        },
-                        options: {
-                            scales: {
-                                y: {
-                                    beginAtZero: false
-                                }
-                            }
-                        }
-                    });
-                    
-                    document.getElementById('result').innerText = `Data fetched for ${ticker}`;
-                })
-                .catch(error => {
-                    console.error('Error fetching stock data:', error);
-                    document.getElementById('result').innerText = 'Failed to fetch data.';
-                });
+        toggleSwitch.addEventListener('change', () => {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+        });
+
+        // Load the theme from local storage on page load
+        window.addEventListener('load', () => {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark') {
+                document.body.classList.add('dark-mode');
+                toggleSwitch.checked = true;
+            }
         });
     </script>
 </body>

@@ -818,6 +818,62 @@ def stock_on_dashboard_data(request):
 
 
 
+#adding market overview
+
+# views.py
+import yfinance as yf
+from django.shortcuts import render
+
+def market_overview(request):
+    # Fetch market indices data
+    sp500 = yf.Ticker("^GSPC")  # S&P 500
+    dow_jones = yf.Ticker("^DJI")  # Dow Jones
+    nasdaq = yf.Ticker("^IXIC")  # NASDAQ
+
+    # Get historical market data
+    sp500_data = sp500.history(period="1d")  # Get last day's data
+    dow_jones_data = dow_jones.history(period="1d")
+    nasdaq_data = nasdaq.history(period="1d")
+
+    # Prepare closing prices
+    sp500_close = sp500_data['Close'][-1] if not sp500_data.empty else None
+    dow_jones_close = dow_jones_data['Close'][-1] if not dow_jones_data.empty else None
+    nasdaq_close = nasdaq_data['Close'][-1] if not nasdaq_data.empty else None
+
+    # Fetch top gainers and losers
+    gainers = ["TSLA", "AMZN", "AAPL"]  # Example gainers
+    losers = ["NFLX", "BA", "DIS"]  # Example losers
+
+    # Prepare data for gainers and losers
+    gainers_data = []
+    for ticker in gainers:
+        info = yf.Ticker(ticker).info
+        gainers_data.append({
+            'ticker': ticker,
+            'percent_change': info.get('regularMarketChangePercent', 0)  # Using .get() to avoid KeyError
+        })
+
+    losers_data = []
+    for ticker in losers:
+        info = yf.Ticker(ticker).info
+        losers_data.append({
+            'ticker': ticker,
+            'percent_change': info.get('regularMarketChangePercent', 0)  # Using .get() to avoid KeyError
+        })
+
+    context = {
+        'sp500_close': sp500_close,
+        'dow_jones_close': dow_jones_close,
+        'nasdaq_close': nasdaq_close,
+        'gainers_data': gainers_data,
+        'losers_data': losers_data,
+    }
+
+    return render(request, 'predict/dashboard.html', context)
+
+
+
+
 
 
 
