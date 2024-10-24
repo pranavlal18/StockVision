@@ -1,0 +1,164 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        
+        /* General body styling with background image */
+        body {
+            font-family: 'Poppins', sans-serif; /* Using a modern, clean font */
+            background: url('{% static 'images/14731307_rm218-bb-07.jpg' %}') no-repeat center center fixed;
+            background-size: cover; /* Ensures the background image covers the entire screen */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative; /* Ensures the background stays behind the form */
+        }
+
+       
+        .form-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 16px; /* More rounded corners for modern aesthetics */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Larger, softer shadow */
+            width: 360px; /* Wider form */
+            text-align: center;
+            position: relative; /* Keeps the form above the blur effect */
+            z-index: 2; /* Places the form on top of the blur and overlay */
+        }
+
+        /* Title Styling */
+        h2 {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* Form inputs and buttons */
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Centering elements */
+        }
+
+        label {
+            align-self: flex-start;
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        /* Input fields */
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease; /* Smooth focus transition */
+        }
+
+        /* Input focus effect */
+        input[type="text"]:focus, input[type="password"]:focus {
+            border-color: #6c63ff; /* A modern color (soft violet) */
+            outline: none;
+            box-shadow: 0 0 5px rgba(108, 99, 255, 0.3);
+        }
+
+        /* Login Button */
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #6c63ff; /* Main button color (modern violet) */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Hover effect for button */
+        button:hover {
+            background-color: #574bff; /* Slightly darker shade of the main button color */
+        }
+
+        /* Register link */
+        p {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #777;
+        }
+
+        a {
+            color: #6c63ff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #574bff; /* Darker shade of violet on hover */
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 400px) {
+            .form-container {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Login</h2>
+        <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username" required>
+            
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" required>
+            
+            <button type="submit">Login</button>
+        </form>
+    
+        <p>Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
+    
+        <!-- Display messages in a more user-friendly way -->
+        {% if messages %}
+            <div class="message-container">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Optional CSS for styling the message alerts -->
+    <style>
+        .alert {
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+    
+</body>
+</html>

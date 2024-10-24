@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Alert</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            padding: 20px;
+        }
+        h2 {
+            color: #1a73e8;
+        }
+        .alert-button, .add-button {
+            background-color: #1a73e8;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+        .alert-button:hover, .add-button:hover {
+            background-color: #0056b3;
+        }
+        .ticker-list {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+    <h2>Stock Alert Monitor</h2>
+    <p>Click the button below to check for significant stock price changes.</p>
+    
+    <button class="alert-button" id="check-alerts">Check Alerts</button>
+
+    <div class="ticker-list">
+        <h3>Monitored Tickers:</h3>
+        <ul id="ticker-list">
+            {% for ticker in tickers %}
+                <li>{{ ticker.ticker }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div>
+        <input type="text" id="new-ticker" placeholder="Enter new ticker" />
+        <button class="add-button" id="add-ticker">Add Ticker</button>
+    </div>
+
+    <div id="response-message" style="margin-top: 20px;"></div>
+
+    <script>
+        document.getElementById('check-alerts').addEventListener('click', function() {
+            fetch('/check-stock-alerts/')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('response-message').innerText = data.message;
+                })
+                .catch(error => {
+                    document.getElementById('response-message').innerText = 'Error checking alerts.';
+                });
+        });
+
+        document.getElementById('add-ticker').addEventListener('click', function() {
+            const newTicker = document.getElementById('new-ticker').value.trim();
+            if (newTicker) {
+                const tickerList = document.getElementById('ticker-list');
+                const newListItem = document.createElement('li');
+                newListItem.textContent = newTicker;
+                tickerList.appendChild(newListItem);
+                document.getElementById('new-ticker').value = '';  // Clear input
+                document.getElementById('response-message').innerText = `${newTicker} added to the list.`;
+                // Optionally, send the new ticker to the server
+                fetch('/add-ticker/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'  // Make sure to include CSRF token for security
+                    },
+                    body: JSON.stringify({ ticker: newTicker })
+                });
+            } else {
+                document.getElementById('response-message').innerText = 'Please enter a valid ticker.';
+            }
+        });
+    </script>
+</body>
+</html>

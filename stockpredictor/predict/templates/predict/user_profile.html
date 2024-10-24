@@ -1,0 +1,234 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        /* Basic reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex; /* Use flexbox for layout */
+        }
+
+        .sidebar {
+            background-color: rgba(26, 115, 232, 0.8);
+            color: white;
+            width: 250px;
+            padding: 20px;
+            position: fixed; /* Fixed sidebar */
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h2 {
+            margin: 0 0 20px;
+            color: white;
+        }
+
+        .sidebar a {
+            text-decoration: none;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .container {
+            margin-left: 250px; /* Space for sidebar */
+            max-width: 800px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            flex: 1; /* Allow main content to fill available space */
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .profile-header img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #ccc;
+        }
+
+        .profile-header p {
+            font-size: 1.2em;
+            color: #777;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        form .form-group {
+            margin-bottom: 15px;
+        }
+
+        form label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        form input[type="text"],
+        form input[type="email"],
+        form textarea,
+        form input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        form textarea {
+            resize: vertical;
+        }
+
+        form button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        form button:hover {
+            background-color: #218838;
+        }
+
+        .predictions-section {
+            margin-top: 30px;
+        }
+
+        .predictions-section h2 {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .predictions-section ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .predictions-section ul li {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            font-size: 1.2em;
+        }
+
+        .predictions-section ul li strong {
+            color: #333;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+            .container {
+                margin-left: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>Welcome, {{ user.username }}!</h2>
+        <a href="{% url 'user_profile' %}"><i class="fas fa-user"></i>Profile</a>
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <a href="{% url 'predict' %}"><i class="fas fa-chart-line"></i>Predict Stock</a>
+        <a href="{% url 'trending_news' %}"><i class="fas fa-newspaper"></i>View Trending News</a>
+        <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>Logout</a>
+    </div>
+
+    <div class="container">
+        <div class="profile-header">
+            <!-- Profile Picture -->
+            <img src="{% if profile.image %}{{ profile.image.url }}{% else %}{% static 'images/default_profile_pic.png' %}{% endif %}" 
+                alt="Profile Picture" class="rounded-circle" width="150" height="150">
+
+            <!-- User Info -->
+            <h1>{{ user.username }}</h1>
+            <p>{{ user.email }}</p>
+        </div>
+
+        <!-- Profile Form -->
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!-- Fields for profile image, bio, and location -->
+            <div class="form-group">
+                <label for="profile_picture">Profile Picture</label>
+                <input type="file" id="profile_picture" name="profile_picture">
+            </div>
+
+            <div class="form-group">
+                <label for="bio">Bio</label>
+                <textarea id="bio" name="bio" rows="4">{{ profile.bio }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location</label>
+                <input type="text" id="location" name="location" value="{{ profile.location }}">
+            </div>
+
+            <button type="submit">Update Profile</button>
+        </form>
+
+        <!-- Recent Stock Predictions Section -->
+        <div class="predictions-section">
+            <h2>Recent Stock Predictions</h2>
+            
+            {% if predictions %}
+                <ul>
+                    {% for prediction in predictions %}
+                        <li><strong>{{ prediction.stock_symbol }}</strong>: Predicted on {{ prediction.prediction_date }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No predictions yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>

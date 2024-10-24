@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Management</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            display: flex; /* Flexbox for sidebar layout */
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 250px;
+            background-color: #1a73e8;
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            height: 100vh;
+            position: fixed;
+        }
+
+        .sidebar h2 {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+        }
+
+        .sidebar a {
+            text-decoration: none;
+            color: white;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .sidebar a:hover {
+            background-color: #0056b3;
+        }
+
+        /* Main Content Styling */
+        .main-content {
+            margin-left: 270px; /* Space for sidebar */
+            padding: 40px 20px;
+            width: 100%;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            color: #1a73e8;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        /* Form Styling */
+        .portfolio-form {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 50px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .portfolio-form label {
+            display: block;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .portfolio-form input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .portfolio-form button {
+            width: 100%;
+            padding: 12px;
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .portfolio-form button:hover {
+            background-color: #135ab3;
+        }
+
+        /* Portfolio Grid */
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .portfolio-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .portfolio-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .portfolio-card h3 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .portfolio-card .price,
+        .portfolio-card .shares {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #777;
+        }
+
+        .portfolio-card .profit-loss {
+            font-size: 1.5rem;
+            color: #1a73e8;
+            font-weight: bold;
+        }
+
+        .portfolio-card .negative {
+            color: #e60000;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .portfolio-form {
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Stock Vision</h2>
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <a href="{% url 'portfolio' %}">Portfolio Management</a>
+        <a href="{% url 'predict' %}">Predict Stock</a>
+        <a href="{% url 'trending_news' %}">Trending News</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h2>Stock Portfolio Management</h2>
+
+        <!-- Portfolio Form -->
+        <div class="portfolio-form">
+            <form method="POST">
+                {% csrf_token %}
+                <label for="stock_ticker">Stock Ticker</label>
+                <input type="text" name="stock_ticker" id="stock_ticker" placeholder="e.g. AAPL" required>
+
+                <label for="shares">Shares</label>
+                <input type="number" name="shares" id="shares" placeholder="Number of shares" required>
+
+                <label for="purchase_price">Purchase Price</label>
+                <input type="number" step="0.01" name="purchase_price" id="purchase_price" placeholder="Price per share" required>
+
+                <button type="submit">Add to Portfolio</button>
+            </form>
+        </div>
+
+        <!-- Portfolio Grid -->
+        <div class="portfolio-grid">
+            {% for stock in portfolio %}
+                <div class="portfolio-card">
+                    <h3>{{ stock.ticker }}</h3>
+                    <div class="price">Purchase Price: ${{ stock.purchase_price }}</div>
+                    <div class="shares">Shares: {{ stock.shares }}</div>
+                    <div class="price">Current Price: 
+                        {% if stock.current_price != "N/A" %} 
+                            ${{ stock.current_price }} 
+                        {% else %} 
+                            N/A 
+                        {% endif %}
+                    </div>
+                    <div class="profit-loss 
+                        {% if stock.profit_loss < 0 %} negative {% endif %}">
+                        Profit/Loss: 
+                        {% if stock.profit_loss != "N/A" %} 
+                            ${{ stock.profit_loss }} 
+                        {% else %} 
+                            N/A 
+                        {% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                <p>No stocks in your portfolio yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</body>
+</html>

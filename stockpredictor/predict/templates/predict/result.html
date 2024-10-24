@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5-Day Stock Prediction Result</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: coral;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px; /* Fixed width for sidebar */
+            background-color: #1a73e8;
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h2 {
+            margin: 0 0 30px; /* Increased bottom margin */
+            font-size: 1.5rem;
+        }
+
+        .sidebar a {
+            text-decoration: none;
+            color: white;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            margin-bottom: 10px; /* Increased margin for spacing between links */
+        }
+
+        .sidebar a:hover {
+            background-color: #0056b3;
+        }
+
+        .main-content {
+            flex-grow: 1; /* Allow main content to grow */
+            display: flex;
+            align-items: center; /* Center vertically */
+            justify-content: center; /* Center horizontally */
+            padding: 20px; /* Add padding for spacing */
+            overflow-y: auto; /* Enable vertical scrolling */
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 700px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #4caf50;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        img {
+            margin-top: 20px;
+            width: 100%;
+            height: auto;
+            max-height: 400px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 10px 20px;
+            background-color: #1a73e8;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-link:hover {
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 90%;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Result</h2>
+        <a href="{% url 'predict' %}">Predict Stock</a>
+        <a href="{% url 'user_profile' %}">Profile</a>
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <a href="{% url 'trending_news' %}">View Trending News</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            <h1>5-Day Stock Prediction</h1>
+            
+            <!-- Predicted Price and Date Table -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Predicted Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for date, price in zipped_predictions %}
+                    <tr>
+                        <td>{{ date }}</td>
+                        <td>{{ price }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Stock Price Plot (if any) -->
+            <img src="{{ plot_url }}" alt="Stock Price Plot">
+
+            <!-- Back to Prediction Link -->
+            <a href="{% url 'predict' %}" class="back-link">Predict Again</a>
+        </div>
+    </div>
+</body>
+</html>

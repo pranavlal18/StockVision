@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Prediction</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: lightblue;
+            color: #333;
+            display: flex;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .sidebar {
+            width: 250px; /* Fixed width for sidebar */
+            background-color: #1a73e8;
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h2 {
+            margin: 0 0 30px; /* Increased bottom margin */
+            font-size: 1.5rem;
+        }
+
+        .sidebar a {
+            text-decoration: none;
+            color: white;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            margin-bottom: 10px; /* Increased margin for spacing between links */
+        }
+
+        .sidebar a:hover {
+            background-color: #0056b3;
+        }
+
+        .main-content {
+            flex-grow: 1; /* Allow main content to grow */
+            display: flex;
+            align-items: center; /* Center vertically */
+            justify-content: center; /* Center horizontally */
+            padding: 20px; /* Add padding for spacing */
+            overflow-y: auto; /* Enable vertical scrolling */
+        }
+
+        .container {
+            background-color: #f8f9fa; /* Changed to light gray */
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        label {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            display: block;
+            color: #555;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            transition: border-color 0.3s, background-color 0.3s; /* Transition for smooth effect */
+        }
+
+        select:hover {
+            border-color: #4caf50; /* Change border color on hover */
+            background-color: #f0f8e0; /* Light background color on hover */
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Predict Stock</h2>
+        <a href="{% url 'user_profile' %}">Profile</a>
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <a href="{% url 'trending_news' %}">View Trending News</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            <h1>Predict Stock Price</h1>
+            <form action="{% url 'result' %}" method="POST">
+                {% csrf_token %}
+                <label for="stock_symbol">Select Stock Symbol:</label>
+                <select id="stock_symbol" name="stock_symbol" required>
+                    <option value="" disabled selected>Select a stock</option>
+                    <option value="AAPL">Apple (AAPL)</option>
+                    <option value="AMZN">Amazon (AMZN)</option>
+                    <option value="GOOGL">Google (GOOGL)</option>
+                    <option value="MSFT">Microsoft (MSFT)</option>
+                    <option value="TSLA">Tesla (TSLA)</option>
+                    <option value="FB">Meta (FB)</option>
+                    <option value="NFLX">Netflix (NFLX)</option>
+                    <option value="NVDA">NVIDIA (NVDA)</option>
+                    <option value="TSM">Taiwan Semiconductor (TSM)</option>
+                    <option value="BRK.A">Berkshire Hathaway (BRK.A)</option>
+                    <option value="BRK.B">Berkshire Hathaway (BRK.B)</option>
+                    <option value="V">Visa (V)</option>
+                    <option value="JPM">JPMorgan Chase (JPM)</option>
+                    <option value="JNJ">Johnson & Johnson (JNJ)</option>
+                    <option value="WMT">Walmart (WMT)</option>
+                    <option value="DIS">Walt Disney (DIS)</option>
+                    <option value="PYPL">PayPal (PYPL)</option>
+                    <option value="INTC">Intel (INTC)</option>
+                    <option value="CSCO">Cisco (CSCO)</option>
+                    <!-- Add more stock options as needed -->
+                </select>
+                <button type="submit">Predict</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

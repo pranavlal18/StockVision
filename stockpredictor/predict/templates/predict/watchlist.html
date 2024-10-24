@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Watchlist</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f7f9fc;
+        }
+        .container {
+            margin: 20px auto;
+            width: 80%;
+        }
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        table th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .up-arrow {
+            color: green;
+        }
+        .down-arrow {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Your Watchlist</h2>
+        <table>
+            <tr>
+                <th>Ticker</th>
+                <th>Real-Time Price</th>
+                <th>Today's Opening Price</th>
+                <th>Trend</th>
+            </tr>
+            {% for stock in stocks_with_prices %}
+            <tr>
+                <td>{{ stock.ticker }}</td>
+                <td>
+                    {% if stock.real_time_price != 'N/A' %}
+                        ${{ stock.real_time_price }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+                <td>
+                    {% if stock.today_open_price != 'N/A' %}
+                        ${{ stock.today_open_price }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+                <td>
+                    {% if stock.trend == 'up' %}
+                        <span class="up-arrow">▲</span>
+                    {% elif stock.trend == 'down' %}
+                        <span class="down-arrow">▼</span>
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <script>
+        // Refresh the page every 15 seconds for real-time data
+        setInterval(function() {
+            window.location.reload();
+        }, 15000);
+    </script>
+</body>
+</html>

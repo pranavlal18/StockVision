@@ -1,0 +1,161 @@
+<!-- templates/compare_stocks.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Comparison Tool</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Full height to allow centering */
+        }
+        .card {
+            margin-top: 20px;
+        }
+        .table th, .table td {
+            vertical-align: middle;
+            text-align: center;
+        }
+        .btn-custom {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-custom:hover {
+            background-color: #0056b3;
+        }
+        .form-label {
+            font-weight: bold;
+        }
+        .suggestions {
+            background-color: #e2f7e2;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        .suggestions h4 {
+            color: #28a745;
+        }
+        .back-button {
+            background-color: #007BFF; /* Bootstrap primary color */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .back-button:hover {
+            background-color: #0056b3; /* Darker shade on hover */
+        }
+        .button-container {
+            text-align: center; /* Center text within the div */
+            margin-top: auto; /* Push button to the bottom */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="text-center">
+        <h1 class="display-4 mb-4">Stock Comparison Tool</h1>
+        <p class="lead">Compare the financial performance of your favorite stocks.</p>
+    </div>
+
+    <!-- Comparison Form -->
+    <div class="card shadow">
+        <div class="card-body">
+            <form method="GET" action="{% url 'compare_stocks' %}">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="stock1" class="form-label">Enter Stock 1:</label>
+                        <input type="text" id="stock1" name="stock1" class="form-control" placeholder="AAPL" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="stock2" class="form-label">Enter Stock 2:</label>
+                        <input type="text" id="stock2" name="stock2" class="form-control" placeholder="GOOGL" required>
+                    </div>
+                </div>
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-custom">Compare Stocks</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Stock Comparison Table -->
+    {% if stock1_data and stock2_data %}
+    <div class="card shadow mt-5">
+        <div class="card-body">
+            <h3 class="text-center mb-4">Comparison Results</h3>
+            <table class="table table-striped table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Metric</th>
+                        <th>{{ stock1_symbol }}</th>
+                        <th>{{ stock2_symbol }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Current Price</strong></td>
+                        <td>{{ stock1_data.current_price }}</td>
+                        <td>{{ stock2_data.current_price }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Open Price</strong></td>
+                        <td>{{ stock1_data.open_price }}</td>
+                        <td>{{ stock2_data.open_price }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>High Price</strong></td>
+                        <td>{{ stock1_data.high_price }}</td>
+                        <td>{{ stock2_data.high_price }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Low Price</strong></td>
+                        <td>{{ stock1_data.low_price }}</td>
+                        <td>{{ stock2_data.low_price }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Market Cap</strong></td>
+                        <td>{{ stock1_data.market_cap }}</td>
+                        <td>{{ stock2_data.market_cap }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>P/E Ratio</strong></td>
+                        <td>{{ stock1_data.pe_ratio }}</td>
+                        <td>{{ stock2_data.pe_ratio }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Suggestions Section -->
+    <div class="suggestions mt-4">
+        <h4>Suggestions</h4>
+        <ul>
+            {% for suggestion in suggestions %}
+                <li>{{ suggestion }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+
+<div class="button-container">
+    <a href="{% url 'dashboard' %}" class="back-button">Back to Dashboard</a>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

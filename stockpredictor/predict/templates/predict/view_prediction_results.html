@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Results</title>
+    <style>
+        /* Add any styles you want here */
+    </style>
+</head>
+<body>
+    <h2>Your Prediction Results</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Stock Symbol</th>
+                <th>Predicted Price</th>
+                <th>Prediction Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for prediction in predictions %}
+                <tr>
+                    <td>{{ prediction.stock_symbol }}</td>
+                    <td>{{ prediction.predicted_price }}</td>
+                    <td>{{ prediction.prediction_date|date:"Y-m-d H:i" }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3">No predictions available.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{% url 'dashboard' %}">Back to Dashboard</a>  <!-- Adjust to your actual dashboard URL -->
+</body>
+</html>
