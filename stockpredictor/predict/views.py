@@ -800,7 +800,21 @@ def get_stock_news(request):
 
 
 
-
+#adding stock on dashbord graph
+def stock_on_dashboard_data(request):
+    ticker = request.GET.get('ticker')
+    if ticker:
+        stock = yf.Ticker(ticker)
+        data = stock.history(period="1mo")  # Fetching 1 month of historical data
+        if not data.empty:
+            # Preparing the response data
+            response_data = {
+                'dates': data.index.strftime('%Y-%m-%d').tolist(),
+                'prices': data['Close'].tolist(),
+            }
+            return JsonResponse(response_data)
+        return JsonResponse({'error': 'No data found for the ticker'}, status=404)
+    return JsonResponse({'error': 'Ticker is required'}, status=400)
 
 
 
