@@ -18,7 +18,6 @@
             overflow: hidden;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
-
         video {
             position: absolute;
             top: 50%;
@@ -31,7 +30,6 @@
             transform: translate(-50%, -50%);
             opacity: 0.5;
         }
-
         .sidebar {
             background-color: rgba(26, 115, 232, 0.8);
             color: white;
@@ -42,12 +40,10 @@
             z-index: 1;
             transition: background-color 0.3s ease;
         }
-
         .sidebar h2 {
             margin: 0 0 20px;
             color: white;
         }
-
         .sidebar a {
             text-decoration: none;
             color: white;
@@ -58,15 +54,9 @@
             display: flex;
             align-items: center;
         }
-
-        .sidebar a i {
-            margin-right: 10px;
-        }
-
         .sidebar a:hover {
             background-color: rgba(255, 255, 255, 0.2);
         }
-
         .main-content {
             margin-left: 250px;
             padding: 30px;
@@ -76,35 +66,25 @@
             z-index: 1;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
-
         h2 {
             color: #1a73e8;
         }
-
         canvas {
             margin-top: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ddd; /* Add a border to check visibility */
         }
-
-        .news-section {
-            margin-top: 40px;
-        }
-
-        /* Dark mode styles */
         .dark-mode {
             background-color: #121212;
             color: #ffffff;
         }
-
         .dark-mode .sidebar {
             background-color: rgba(0, 0, 0, 0.8);
         }
-
         .dark-mode .main-content {
             background-color: rgba(18, 18, 18, 0.9);
         }
-
         .toggle-switch {
             position: absolute;
             bottom: 50px; 
@@ -115,8 +95,6 @@
             --light: #d8dbe0;
             --dark: #28292c;
         }
-        
-
         .switch-label {
             position: absolute;
             width: 100%;
@@ -126,12 +104,10 @@
             cursor: pointer;
             border: 3px solid var(--dark);
         }
-
         .checkbox {
             position: absolute;
             display: none;
         }
-
         .slider {
             position: absolute;
             width: 100%;
@@ -139,11 +115,9 @@
             border-radius: 25px;
             transition: 0.3s;
         }
-
         .checkbox:checked ~ .slider {
             background-color: var(--light);
         }
-
         .slider::before {
             content: "";
             position: absolute;
@@ -156,12 +130,79 @@
             background-color: var(--dark);
             transition: 0.3s;
         }
-
         .checkbox:checked ~ .slider::before {
             transform: translateX(50px);
             background-color: var(--dark);
             box-shadow: none;
         }
+        body {
+            font-family: 'Arial', sans-serif;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.9);
+            flex: 1;
+            overflow-y: auto;
+        }
+        h2 {
+            color: #1a73e8;
+        }
+        canvas {
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        label {
+            font-size: 16px;
+            margin-right: 10px;
+            color: #333;
+        }
+        
+        input[type="text"] {
+            padding: 10px 15px;
+            border: 2px solid #007bff;
+            border-radius: 4px;
+            font-size: 16px;
+            width: 200px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        
+        input[type="text"]:focus {
+            border-color: #0056b3;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: background-color 0.3s ease;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+        
     </style>
 </head>
 <body>
@@ -172,14 +213,13 @@
 
     <div class="sidebar">
         <h2>Welcome, {{ user.username }}!</h2>
-        <a href="{% url 'dashboard' %}"><i class="fas fa-chart-line"></i> Stock Dashboard</a>
-        <a href="{% url 'user_profile' %}"><i class="fas fa-user"></i> Profile</a>
-        <a href="{% url 'portfolio' %}"><i class="fas fa-briefcase"></i> Portfolio</a>
-        <a href="{% url 'trending_news' %}"><i class="fas fa-newspaper"></i> View Trending News</a>
-        <a href="{% url 'compare_stocks' %}"><i class="fas fa-exchange-alt"></i> Compare Stocks</a>
-        <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
-
-        <!-- Custom Toggle Switch -->
+        <a href="{% url 'dashboard' %}"><i class="fas fa-user"> </i> Stock Dashboard</a>
+        <a href="{% url 'predict' %}"><i class="fas fa-chart-line"> </i> Predict Stock</a>
+        <a href="{% url 'portfolio' %}"><i class="fas fa-briefcase"> </i> Portfolio</a>
+        <a href="{% url 'trending_news' %}"><i class="fas fa-newspaper"> </i> View Trending News</a>
+        <a href="{% url 'compare_stocks' %}"><i class="fas fa-exchange-alt"> </i> Compare Stocks</a>
+        <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"> </i> Logout</a>
+        <a href="{% url 'real_time_price_no_ticker' %}">Check Real-Time Stock Price</a>
         <div class="toggle-switch">
             <label class="switch-label">
                 <input type="checkbox" class="checkbox" id="theme-switch">
@@ -190,56 +230,73 @@
 
     <div class="main-content">
         <h2>Stock Dashboard</h2>
+        <form method="get" action="{% url 'dashboard' %}">
+            <label for="stock_ticker"><b>Enter Stock Ticker:</b></label>
+            <input type="text" id="stock_ticker" name="stock_ticker" value="{{ stock_ticker }}" required>
+            <button type="submit">Submit</button>
+        </form>
+        <h3>Historical Closing Prices for {{ stock_ticker }}</h3>
+        <canvas id="historicalChart"></canvas>
 
-        <!-- Market Overview Widget -->
-<div class="market-overview">
-    <h3>Market Overview</h3>
-    <div class="market-indices">
-        <h4>Indices Performance:</h4>
-        <ul>
-            <li>S&P 500: {{ sp500_close }}</li>
-            <li>Dow Jones: {{ dow_jones_close }}</li>
-            <li>NASDAQ: {{ nasdaq_close }}</li>
-        </ul>
+        <script>
+            const historicalPrices = {{ historical_prices|safe }};
+            const labels = historicalPrices.map(row => new Date(row[0]).toLocaleDateString());
+            const data = historicalPrices.map(row => row[1]);
+
+            const ctx = document.getElementById('historicalChart').getContext('2d');
+            const historicalChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Closing Price',
+                        data: data,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        fill: true,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Price (USD)'
+                            }
+                        }
+                    }
+                }
+            });
+            const toggleSwitch = document.getElementById('theme-switch');
+
+            // Function to switch the theme
+            const switchTheme = () => {
+                document.body.classList.toggle('dark-mode');
+                const theme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+                localStorage.setItem('theme', theme);
+            };
+        
+            // Event listener for the theme switch
+            toggleSwitch.addEventListener('change', switchTheme);
+        
+            // On page load, check for saved theme preference and apply it
+            window.addEventListener('load', () => {
+                const savedTheme = localStorage.getItem('theme');
+                if (savedTheme === 'dark') {
+                    document.body.classList.add('dark-mode');
+                    toggleSwitch.checked = true;
+                }
+            });
+        </script>
     </div>
-    <div class="market-gainers">
-        <h4>Top Gainers:</h4>
-        <ul>
-            {% for data in gainers_data %}
-                <li>{{ data.ticker }}: +{{ data.percent_change }}%</li>
-            {% endfor %}
-        </ul>
-    </div>
-    <div class="market-losers">
-        <h4>Top Losers:</h4>
-        <ul>
-            {% for data in losers_data %}
-                <li>{{ data.ticker }}: -{{ data.percent_change }}%</li>
-            {% endfor %}
-        </ul>
-    </div>
-</div>
-<!-- End of Market Overview Widget -->
 
-        <!-- Your existing content goes here -->
-    </div>
-
-    <script>
-        const toggleSwitch = document.getElementById('theme-switch');
-
-        toggleSwitch.addEventListener('change', () => {
-            document.body.classList.toggle('dark-mode');
-            localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
-        });
-
-        // Load the theme from local storage on page load
-        window.addEventListener('load', () => {
-            const theme = localStorage.getItem('theme');
-            if (theme === 'dark') {
-                document.body.classList.add('dark-mode');
-                toggleSwitch.checked = true;
-            }
-        });
-    </script>
+    
 </body>
 </html>

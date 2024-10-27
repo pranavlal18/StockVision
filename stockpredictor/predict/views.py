@@ -818,66 +818,79 @@ def stock_on_dashboard_data(request):
 
 
 
-#adding market overview
-
 # views.py
+from django.http import JsonResponse
 import yfinance as yf
+
+def get_real_time_stock_price(request, ticker):
+    # Fetch the live data for the selected ticker
+    stock_data = yf.Ticker(ticker)
+    price = stock_data.history(period="1d")['Close'][-1]
+    
+    return JsonResponse({'ticker': ticker, 'price': price})
+# predict/views.py
 from django.shortcuts import render
 
-def market_overview(request):
-    # Fetch market indices data
-    sp500 = yf.Ticker("^GSPC")  # S&P 500
-    dow_jones = yf.Ticker("^DJI")  # Dow Jones
-    nasdaq = yf.Ticker("^IXIC")  # NASDAQ
+def real_time_price(request, ticker=None):
+    # Any additional logic for handling `ticker`, if needed
+    return render(request, 'predict/real_time_price.html')
 
-    # Get historical market data
-    sp500_data = sp500.history(period="1d")  # Get last day's data
-    dow_jones_data = dow_jones.history(period="1d")
-    nasdaq_data = nasdaq.history(period="1d")
 
-    # Prepare closing prices
-    sp500_close = sp500_data['Close'][-1] if not sp500_data.empty else None
-    dow_jones_close = dow_jones_data['Close'][-1] if not dow_jones_data.empty else None
-    nasdaq_close = nasdaq_data['Close'][-1] if not nasdaq_data.empty else None
 
-    # Fetch top gainers and losers
-    gainers = ["TSLA", "AMZN", "AAPL"]  # Example gainers
-    losers = ["NFLX", "BA", "DIS"]  # Example losers
 
-    # Prepare data for gainers and losers
-    gainers_data = []
-    for ticker in gainers:
-        info = yf.Ticker(ticker).info
-        gainers_data.append({
-            'ticker': ticker,
-            'percent_change': info.get('regularMarketChangePercent', 0)  # Using .get() to avoid KeyError
-        })
 
-    losers_data = []
-    for ticker in losers:
-        info = yf.Ticker(ticker).info
-        losers_data.append({
-            'ticker': ticker,
-            'percent_change': info.get('regularMarketChangePercent', 0)  # Using .get() to avoid KeyError
-        })
+import requests
+from django.shortcuts import render
+from datetime import datetime, timedelta
 
-    context = {
-        'sp500_close': sp500_close,
-        'dow_jones_close': dow_jones_close,
-        'nasdaq_close': nasdaq_close,
-        'gainers_data': gainers_data,
-        'losers_data': losers_data,
+# Your Alpha Vantage API key
+ALPHA_VANTAGE_API_KEY = 'YOUR_API_KEY'
+
+def fetch_stock_data_alpha_vantage(stock_ticker):
+    # Alpha Vantage API URL
+    base_url = 'https://www.alphavantage.co/query'
+    
+    # Define the parameters for the API request
+    params = {
+        'function': 'TIME_SERIES_DAILY',
+        'symbol': stock_ticker,
+        'outputsize': 'compact',  # Fetch recent data only (100 days), or 'full' for full history
+        'apikey': ALPHA_VANTAGE_API_KEY
     }
 
-    return render(request, 'predict/dashboard.html', context)
+    # Make the API request to Alpha Vantage
+    response = requests.get(base_url, params=params)
+    
+    # Parse the JSON response
+    data = response.json()
 
+    # Check if we received valid data
+    if 'Time Series (Daily)' in data:
+        time_series = data['Time Series (Daily)']
+        
+        # Extract date and closing price
+        historical_prices = [
+            [date, float(info['4. close'])] for date, info in time_series.items()
+        ]
+        
+        # Sort the data by date (ascending)
+        historical_prices.sort(key=lambda x: x[0])
 
+        return historical_prices
+    else:
+        # Handle the case where the stock ticker is invalid or no data is available
+        return []
+def stock_dashboard(request):
+    # Get the stock ticker from the user's input, defaulting to 'AAPL' if not provided
+    stock_ticker = request.GET.get('stock_ticker', 'AAPL')  # Get stock ticker from query parameters
 
+    # Fetch historical stock data from Alpha Vantage
+    historical_prices = fetch_stock_data_alpha_vantage(stock_ticker)
 
-
-
-
-
-
-
+    # Render the template with stock data and the user input for the ticker
+    return render(request, 'predict/dashboard.html', {
+        'user': request.user,
+        'historical_prices': historical_prices,
+        'stock_ticker': stock_ticker
+    })
 

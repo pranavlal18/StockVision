@@ -1,0 +1,40 @@
+<!-- predict/real_time_price.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Stock Price</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Real-Time Stock Price</h1>
+    <div>
+        <label for="ticker">Enter Stock Ticker:</label>
+        <input type="text" id="ticker" value="AAPL"> <!-- Default ticker -->
+        <button onclick="fetchPrice()">Get Price</button>
+    </div>
+    <h2>Current Price of <span id="ticker-name">AAPL</span>: $<span id="stock-price">Loading...</span></h2>
+
+    <script>
+        function fetchPrice() {
+            const ticker = document.getElementById('ticker').value;
+            document.getElementById('ticker-name').textContent = ticker;
+
+            $.ajax({
+                url: `/predict/real-time-price/${ticker}/`,  // Updated URL path
+                method: 'GET',
+                success: function(data) {
+                    document.getElementById('stock-price').textContent = data.price.toFixed(2);
+                },
+                error: function() {
+                    document.getElementById('stock-price').textContent = "Error fetching price";
+                }
+            });
+        }
+
+        // Automatically update every 10 seconds
+        setInterval(fetchPrice, 10000); // 10,000 milliseconds = 10 seconds
+    </script>
+</body>
+</html>

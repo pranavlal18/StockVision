@@ -62,6 +62,16 @@
     </style>
 </head>
 <body>
+    <!-- Error Message -->
+    {% if invalid_ticker %}
+    <script>
+        alert("Cannot compare. Please enter valid stock tickers.");
+    </script>
+    {% endif %}
+    
+
+
+
 
 <div class="container">
     <div class="text-center">
@@ -137,6 +147,7 @@
                 </tbody>
             </table>
         </div>
+        
     </div>
 
     <!-- Suggestions Section -->
